@@ -94,7 +94,7 @@ func (i *Int) Scan(val interface{}) error {
 // Value implements the driver.Valuer interface.
 // Example:
 //  var i = Int{big.NewInt(100)}
-// 	_ = db.Exec("INSERT INTO example (i) VALUES (?);", i)
+//	_ = db.Exec("INSERT INTO example (i) VALUES (?);", i)
 func (i Int) Value() (driver.Value, error) {
 	if i.Int == nil {
 		return "0", nil

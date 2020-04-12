@@ -1,0 +1,19 @@
+name: test
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: tests with go1.14
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run golangci-lint
+        uses: actions-contrib/golangci-lint@v1
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: Go1.14
+      - run: |
+          go test -race -coverprofile=coverage.txt -covermode=atomic
+          bash <(curl -s https://codecov.io/bash)
