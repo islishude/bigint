@@ -17,7 +17,6 @@ type Int struct {
 }
 
 // New copies *big.Int to Int
-// If i is nil and then create new *big.Int
 func New(i *big.Int) Int {
 	if i == nil {
 		return Int{Int: new(big.Int)}
@@ -36,7 +35,7 @@ func (i Int) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
-// It supports unsigned integer(uint64) or string integer to *big.Int.
+// It converts unsigned integer(uint64) or string unsigned integer to *big.Int.
 func (i *Int) UnmarshalJSON(text []byte) error {
 	if bytes.Equal(text, null) {
 		i.Int = new(big.Int)
