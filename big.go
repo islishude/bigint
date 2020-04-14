@@ -63,8 +63,7 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 }
 
 // Scan implements the sql.Scanner interface.
-// It converts decimal(N,0) to *big.Int or NULL to new(big.Int)
-// Example:
+// It converts decimal(N,0) or NULL to *big.Int
 // 	var i Int
 // 	_ = db.QueryRow("SELECT i FROM example WHERE id=1;").Scan(&i)
 func (i *Int) Scan(val interface{}) error {
@@ -92,9 +91,8 @@ func (i *Int) Scan(val interface{}) error {
 }
 
 // Value implements the driver.Valuer interface.
-// Example:
 //  var i = Int{big.NewInt(100)}
-//	_ = db.Exec("INSERT INTO example (i) VALUES (?);", i)
+//  _ = db.Exec("INSERT INTO example (i) VALUES (?);", i)
 func (i Int) Value() (driver.Value, error) {
 	if i.Int == nil {
 		return "0", nil
