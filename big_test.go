@@ -78,10 +78,40 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 			want:    big.NewInt(1024),
 		},
 		{
+			name:    "negative string integer",
+			args:    args{[]byte(`{"Field": "-1024"}`)},
+			wantErr: false,
+			want:    big.NewInt(-1024),
+		},
+		{
+			name:    "string hex",
+			args:    args{[]byte(`{"Field": "0x400"}`)},
+			wantErr: false,
+			want:    big.NewInt(1024),
+		},
+		{
+			name:    "string hex 2",
+			args:    args{[]byte(`{"Field": "0x03"}`)},
+			wantErr: false,
+			want:    big.NewInt(3),
+		},
+		{
+			name:    "invalid hex string",
+			args:    args{[]byte(`{"Field": "0xxyz"}`)},
+			wantErr: true,
+			want:    nil,
+		},
+		{
 			name:    "integer",
 			args:    args{[]byte(`{"Field": 1024}`)},
 			wantErr: false,
 			want:    big.NewInt(1024),
+		},
+		{
+			name:    "negative integer",
+			args:    args{[]byte(`{"Field": -1024}`)},
+			wantErr: false,
+			want:    big.NewInt(-1024),
 		},
 		{
 			name:    "float64 string",
@@ -123,7 +153,7 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	type args struct {
-		i *big.Int
+		i uint64
 	}
 	tests := []struct {
 		name string
@@ -132,12 +162,7 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "nil",
-			args: args{nil},
-			want: Int{new(big.Int)},
-		},
-		{
-			name: "nil",
-			args: args{big.NewInt(1024)},
+			args: args{1024},
 			want: Int{big.NewInt(1024)},
 		},
 	}
@@ -265,9 +290,16 @@ func TestInt_Scan(t *testing.T) {
 			want:    big.NewInt(1024),
 		},
 		{
-			name:    "invalid decimal bytes",
+			name:    "decimal(10,2)",
 			fields:  fields{},
-			args:    args{[]byte("0x100")},
+			args:    args{[]byte("10.24")},
+			wantErr: true,
+			want:    nil,
+		},
+		{
+			name:    "double",
+			fields:  fields{},
+			args:    args{10.24},
 			wantErr: true,
 			want:    nil,
 		},
@@ -284,6 +316,34 @@ func TestInt_Scan(t *testing.T) {
 			args:    args{nil},
 			wantErr: false,
 			want:    new(big.Int),
+		},
+		{
+			name:    "int32",
+			fields:  fields{nil},
+			args:    args{int32(1024)},
+			wantErr: false,
+			want:    big.NewInt(1024),
+		},
+		{
+			name:    "uint32",
+			fields:  fields{nil},
+			args:    args{uint32(1024)},
+			wantErr: false,
+			want:    big.NewInt(1024),
+		},
+		{
+			name:    "int64",
+			fields:  fields{nil},
+			args:    args{int64(1024)},
+			wantErr: false,
+			want:    big.NewInt(1024),
+		},
+		{
+			name:    "uint64",
+			fields:  fields{nil},
+			args:    args{uint64(1024)},
+			wantErr: false,
+			want:    big.NewInt(1024),
 		},
 	}
 	for _, tt := range tests {

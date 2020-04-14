@@ -7,21 +7,29 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strings"
 )
 
 var quote = []byte(`"`)
 var null = []byte(`null`)
 
+const hexprx = "0x"
+
 type Int struct {
 	*big.Int
 }
 
-// New copies *big.Int to Int
-func New(i *big.Int) Int {
+// New creates Int by uint64
+func New(i uint64) Int {
+	return Int{Int: new(big.Int).SetUint64(i)}
+}
+
+// NewBig creates Int by *big.Int
+func NewBig(i *big.Int) Int {
 	if i == nil {
-		return Int{Int: new(big.Int)}
+		i = new(big.Int)
 	}
-	return Int{Int: new(big.Int).Set(i)}
+	return Int{Int: i}
 }
 
 // MarshalJSON implements the json.Marshaler interface.
@@ -35,7 +43,7 @@ func (i Int) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
-// It converts unsigned integer(uint64) or string unsigned integer to *big.Int.
+// It converts integer or string integer or hex string to *big.Int.
 func (i *Int) UnmarshalJSON(text []byte) error {
 	if bytes.Equal(text, null) {
 		i.Int = new(big.Int)
@@ -47,22 +55,30 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 		_ = json.Unmarshal(text, &s) // always no error
 
 		var ok bool
+		if strings.HasPrefix(s, hexprx) {
+			if i.Int, ok = new(big.Int).SetString(s[2:], 16); !ok {
+				return fmt.Errorf("bigint: can't convert hex %s to *big.Int", string(text))
+			}
+			return nil
+		}
+
 		if i.Int, ok = new(big.Int).SetString(s, 10); !ok {
-			return fmt.Errorf("Can't convert %s to *big.Int", string(text))
+			return fmt.Errorf("bigint: can't convert %s to *big.Int", string(text))
 		}
 		return nil
 	}
 
-	var x uint64
+	var x int64
 	if err := json.Unmarshal(text, &x); err != nil {
 		return err
 	}
-	i.Int = new(big.Int).SetUint64(x)
+	i.Int = new(big.Int).SetInt64(x)
 	return nil
 }
 
 // Scan implements the sql.Scanner interface.
-// It converts decimal(N,0) or NULL to *big.Int
+// It converts decimal(N,0) or integer or NULL to *big.Int
+// If the field is NULL,bigint.Int will create by new(big.Int)
 // 	var i Int
 // 	_ = db.QueryRow("SELECT i FROM example WHERE id=1;").Scan(&i)
 func (i *Int) Scan(val interface{}) error {
@@ -72,19 +88,31 @@ func (i *Int) Scan(val interface{}) error {
 	}
 
 	var data string
-	switch i := val.(type) {
+	switch v := val.(type) {
 	case []byte:
-		data = string(i)
+		data = string(v)
 	case string:
-		data = i
+		data = v
+	case int64:
+		i.Int = new(big.Int).SetInt64(v)
+		return nil
+	case uint64:
+		i.Int = new(big.Int).SetUint64(v)
+		return nil
+	case int32:
+		i.Int = new(big.Int).SetInt64(int64(v))
+		return nil
+	case uint32:
+		i.Int = new(big.Int).SetUint64(uint64(v))
+		return nil
 	default:
-		return fmt.Errorf("Can't Scan to *big.Int by %s", reflect.TypeOf(val).Kind())
+		return fmt.Errorf("bigint: can't convert %s type to *big.Int", reflect.TypeOf(val).Kind())
 	}
 
 	var ok bool
 	i.Int, ok = new(big.Int).SetString(data, 10)
 	if !ok {
-		return fmt.Errorf("Can't convert %s to *big.Int", data)
+		return fmt.Errorf("bigint can't convert %s to *big.Int", data)
 	}
 	return nil
 }
