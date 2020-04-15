@@ -51,14 +51,14 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 		if bytes.HasPrefix(n, hprx) {
 			r := string(n[2:])
 			if i.Int, ok = new(big.Int).SetString(r, 16); !ok {
-				return fmt.Errorf("bigint: can't convert hex %s to *big.Int", r)
+				return fmt.Errorf(`bigint: can't convert "0x%s" to *big.Int`, r)
 			}
 			return nil
 		}
 
 		r := string(n)
 		if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
-			return fmt.Errorf("bigint: can't convert %s to *big.Int", r)
+			return fmt.Errorf(`bigint: can't convert "%s" to *big.Int`, r)
 		}
 		return nil
 	}

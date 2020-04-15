@@ -31,6 +31,9 @@ func ExampleInt_UnmarshalJSON() {
 	_ = json.Unmarshal([]byte(`{"Field": "0x3"}`), &d)
 	fmt.Println(d.Field)
 
+	// not supports decoding emtpy string or empty hex
+	// eg. `{"Field": ""}` or `{"Field": "0x"}`
+
 	// Output:
 	// 0
 	// 1

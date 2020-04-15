@@ -78,6 +78,12 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 			want:    nil,
 		},
 		{
+			name:    "empty string",
+			args:    args{[]byte(`{"Field": ""}`)},
+			wantErr: true,
+			want:    nil,
+		},
+		{
 			name:    "null",
 			args:    args{[]byte(`{"Field": null}`)},
 			wantErr: false,
@@ -100,6 +106,12 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 			args:    args{[]byte(`{"Field": "0x400"}`)},
 			wantErr: false,
 			want:    big.NewInt(1024),
+		},
+		{
+			name:    "empty hex string",
+			args:    args{[]byte(`{"Field": "0x"}`)},
+			wantErr: true,
+			want:    nil,
 		},
 		{
 			name:    "string hex 2",
