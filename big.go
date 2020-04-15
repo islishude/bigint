@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"strings"
 )
 
-var quote = []byte(`"`)
-var null = []byte(`null`)
-
-const hexprx = "0x"
+var (
+	quote = []byte{34}                 // `"`
+	hprx  = []byte{48, 120}            // `0x`
+	null  = []byte{110, 117, 108, 108} // `null`
+)
 
 type Int struct {
 	*big.Int
@@ -37,7 +37,7 @@ func NewBig(i *big.Int) Int {
 func (i Int) MarshalJSON() ([]byte, error) {
 	if i.Int == nil {
 		// shouldn't use null variable on above
-		return []byte("null"), nil
+		return []byte{110, 117, 108, 108}, nil
 	}
 	return json.Marshal(i.Int.String())
 }
@@ -50,29 +50,28 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 		return nil
 	}
 
+	var ok bool
 	if bytes.HasPrefix(text, quote) && bytes.HasSuffix(text, quote) {
-		var s string
-		_ = json.Unmarshal(text, &s) // always no error
-
-		var ok bool
-		if strings.HasPrefix(s, hexprx) {
-			if i.Int, ok = new(big.Int).SetString(s[2:], 16); !ok {
-				return fmt.Errorf("bigint: can't convert hex %s to *big.Int", string(text))
+		n := text[1 : len(text)-1]
+		if bytes.HasPrefix(n, hprx) {
+			r := string(n[2:])
+			if i.Int, ok = new(big.Int).SetString(r, 16); !ok {
+				return fmt.Errorf("bigint: can't convert hex %s to *big.Int", r)
 			}
 			return nil
 		}
 
-		if i.Int, ok = new(big.Int).SetString(s, 10); !ok {
-			return fmt.Errorf("bigint: can't convert %s to *big.Int", string(text))
+		r := string(n)
+		if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
+			return fmt.Errorf("bigint: can't convert %s to *big.Int", r)
 		}
 		return nil
 	}
 
-	var x int64
-	if err := json.Unmarshal(text, &x); err != nil {
-		return err
+	r := string(text)
+	if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
+		return fmt.Errorf("bigint: can't convert %s to *big.Int", r)
 	}
-	i.Int = new(big.Int).SetInt64(x)
 	return nil
 }
 
