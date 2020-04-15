@@ -51,7 +51,7 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 	}
 
 	var ok bool
-	if bytes.HasPrefix(text, quote) && bytes.HasSuffix(text, quote) {
+	if bytes.HasPrefix(text, quote) {
 		n := text[1 : len(text)-1]
 		if bytes.HasPrefix(n, hprx) {
 			r := string(n[2:])

@@ -66,6 +66,18 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 		want    *big.Int
 	}{
 		{
+			name:    "invalid json",
+			args:    args{[]byte(`{"Field": "1}`)},
+			wantErr: true,
+			want:    nil,
+		},
+		{
+			name:    "invalid json 2",
+			args:    args{[]byte(`{"Field": 1"}`)},
+			wantErr: true,
+			want:    nil,
+		},
+		{
 			name:    "null",
 			args:    args{[]byte(`{"Field": null}`)},
 			wantErr: false,

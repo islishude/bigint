@@ -12,6 +12,7 @@ BenchmarkInt_UnmarshalJSON-12    	  538291	      2205 ns/op	    1064 B/op	      
 BenchmarkInt_UnmarshalJSON-12    	  753636	      1589 ns/op	     488 B/op	      15 allocs/op
 BenchmarkInt_UnmarshalJSON-12    	  764230	      1581 ns/op	     480 B/op	      14 allocs/op
 BenchmarkInt_UnmarshalJSON-12    	  764990	      1553 ns/op	     480 B/op	      14 allocs/op
+BenchmarkInt_UnmarshalJSON-12    	  775316	      1546 ns/op	     480 B/op	      14 allocs/op
 */
 
 func BenchmarkInt_UnmarshalJSON(b *testing.B) {
