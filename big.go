@@ -45,11 +45,6 @@ func (i Int) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the json.Unmarshaler interface.
 // It converts integer or string integer or hex string to *big.Int.
 func (i *Int) UnmarshalJSON(text []byte) error {
-	if bytes.Equal(text, null) {
-		i.Int = new(big.Int)
-		return nil
-	}
-
 	var ok bool
 	if bytes.HasPrefix(text, quote) {
 		n := text[1 : len(text)-1]
@@ -65,6 +60,11 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 		if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
 			return fmt.Errorf("bigint: can't convert %s to *big.Int", r)
 		}
+		return nil
+	}
+
+	if bytes.Equal(text, null) {
+		i.Int = new(big.Int)
 		return nil
 	}
 
