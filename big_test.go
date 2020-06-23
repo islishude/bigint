@@ -177,7 +177,7 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	type args struct {
-		i uint64
+		i int64
 	}
 	tests := []struct {
 		name string
@@ -185,9 +185,14 @@ func TestNew(t *testing.T) {
 		want Int
 	}{
 		{
-			name: "nil",
+			name: "case 1",
 			args: args{1024},
 			want: Int{big.NewInt(1024)},
+		},
+		{
+			name: "case 2",
+			args: args{0},
+			want: Int{big.NewInt(0)},
 		},
 	}
 	for _, tt := range tests {
@@ -381,6 +386,35 @@ func TestInt_Scan(t *testing.T) {
 
 			if !reflect.DeepEqual(i.Int, tt.want) {
 				t.Errorf("Int.Scan() want %s, got %s", tt.want, i.Int)
+			}
+		})
+	}
+}
+
+func TestNewUint(t *testing.T) {
+	type args struct {
+		i uint64
+	}
+	tests := []struct {
+		name string
+		args args
+		want Int
+	}{
+		{
+			name: "case 1",
+			args: args{1024},
+			want: Int{big.NewInt(1024)},
+		},
+		{
+			name: "case 2",
+			args: args{0},
+			want: Int{new(big.Int)},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewUint(tt.args.i); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewUint() = %v, want %v", got, tt.want)
 			}
 		})
 	}

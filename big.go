@@ -19,12 +19,18 @@ type Int struct {
 	*big.Int
 }
 
-// New creates Int by uint64
-func New(i uint64) Int {
+// New creates Int by int64
+func New(i int64) Int {
+	return Int{Int: big.NewInt(i)}
+}
+
+// New creates Int by int64
+func NewUint(i uint64) Int {
 	return Int{Int: new(big.Int).SetUint64(i)}
 }
 
-// NewBig creates Int by *big.Int
+// NewBig creates new Int by *big.Int.
+// if `i` is nil then creates by new(big.Int)
 func NewBig(i *big.Int) Int {
 	if i == nil {
 		i = new(big.Int)
@@ -36,8 +42,7 @@ func NewBig(i *big.Int) Int {
 // It converts *big.Int to string integer
 func (i Int) MarshalJSON() ([]byte, error) {
 	if i.Int == nil {
-		// shouldn't use null variable on above
-		return []byte{110, 117, 108, 108}, nil
+		return append([]byte(nil), null...), nil
 	}
 	return json.Marshal(i.Int.String())
 }
@@ -77,7 +82,7 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 
 // Scan implements the sql.Scanner interface.
 // It converts decimal(N,0) or integer or NULL to *big.Int
-// If the field is NULL,bigint.Int will create by new(big.Int)
+// If the field is NULL,then creates by new(big.Int)
 // 	var i Int
 // 	_ = db.QueryRow("SELECT i FROM example WHERE id=1;").Scan(&i)
 func (i *Int) Scan(val interface{}) error {
@@ -95,11 +100,11 @@ func (i *Int) Scan(val interface{}) error {
 	case int64:
 		i.Int = new(big.Int).SetInt64(v)
 		return nil
-	case uint64:
-		i.Int = new(big.Int).SetUint64(v)
-		return nil
 	case int32:
 		i.Int = new(big.Int).SetInt64(int64(v))
+		return nil
+	case uint64:
+		i.Int = new(big.Int).SetUint64(v)
 		return nil
 	case uint32:
 		i.Int = new(big.Int).SetUint64(uint64(v))
@@ -117,8 +122,7 @@ func (i *Int) Scan(val interface{}) error {
 }
 
 // Value implements the driver.Valuer interface.
-//  var i = Int{big.NewInt(100)}
-//  _ = db.Exec("INSERT INTO example (i) VALUES (?);", i)
+//  _ = db.Exec("INSERT INTO example (i) VALUES (?);", bigint.New(100))
 func (i Int) Value() (driver.Value, error) {
 	if i.Int == nil {
 		return "0", nil
@@ -126,7 +130,8 @@ func (i Int) Value() (driver.Value, error) {
 	return i.Int.String(), nil
 }
 
-// Copy create new *big.Int with deep copy
+// Copy creates new bigint.Int with deep copy
+//  if `i.Int` is nil then creates by new(big.Int)
 func (i Int) Copy() Int {
 	if i.Int == nil {
 		return Int{new(big.Int)}
