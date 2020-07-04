@@ -15,7 +15,7 @@ func BenchmarkInt_UnmarshalJSON(b *testing.B) {
 	}
 
 	var raw = []byte(`{"Null":null,"Hex":"0x1","String":"2","Integer":"3"}`)
-	want := &Object{Null: New(0), Hex: New(1), String: New(2), Integer: New(3)}
+	want := &Object{Null: Int{}, Hex: New(1), String: New(2), Integer: New(3)}
 
 	var O Object
 	if err := json.Unmarshal(raw, &O); err != nil {
