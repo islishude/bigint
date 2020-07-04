@@ -126,3 +126,8 @@ func (i Int) Copy() Int {
 	}
 	return Int{new(big.Int).Set(i.Int)}
 }
+
+// IsNil returns is or not nil
+func (i Int) IsNil() bool {
+	return i.Int == nil
+}

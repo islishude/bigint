@@ -14,11 +14,15 @@ func ExampleInt_UnmarshalJSON() {
 	// null
 	var a Object
 	_ = json.Unmarshal([]byte(`{"Field": null}`), &a)
-	fmt.Println(a.Field, a.Field.Int == nil)
+	fmt.Println(a.Field, a.Field.IsNil())
 
 	// unsigned integer
 	var b Object
 	_ = json.Unmarshal([]byte(`{"Field": 1}`), &b)
+	fmt.Println(b.Field)
+
+	// signed integer
+	_ = json.Unmarshal([]byte(`{"Field": -1}`), &b)
 	fmt.Println(b.Field)
 
 	// string unsigned integer
@@ -26,26 +30,30 @@ func ExampleInt_UnmarshalJSON() {
 	_ = json.Unmarshal([]byte(`{"Field": "2"}`), &c)
 	fmt.Println(c.Field)
 
+	_ = json.Unmarshal([]byte(`{"Field": "-2"}`), &c)
+	fmt.Println(c.Field)
+
 	// hex string
 	var d Object
 	_ = json.Unmarshal([]byte(`{"Field": "0x3"}`), &d)
 	fmt.Println(d.Field)
 
+	// empty hex string
 	var e Object
 	_ = json.Unmarshal([]byte(`{"Field": "0x"}`), &e)
-	fmt.Println(e.Field, e.Field.Int == nil)
+	fmt.Println(e.Field, e.Field.IsNil())
 
+	// empty string
 	var f Object
 	_ = json.Unmarshal([]byte(`{"Field": ""}`), &f)
-	fmt.Println(f.Field, f.Field.Int == nil)
-
-	// not supports decoding emtpy string or empty hex
-	// eg. `{"Field": ""}` or `{"Field": "0x"}`
+	fmt.Println(f.Field, f.Field.IsNil())
 
 	// Output:
 	// <nil> true
 	// 1
+	// -1
 	// 2
+	// -2
 	// 3
 	// <nil> true
 	// <nil> true
