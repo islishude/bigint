@@ -14,7 +14,7 @@ func ExampleInt_UnmarshalJSON() {
 	// null
 	var a Object
 	_ = json.Unmarshal([]byte(`{"Field": null}`), &a)
-	fmt.Println(a.Field)
+	fmt.Println(a.Field, a.Field.Int == nil)
 
 	// unsigned integer
 	var b Object
@@ -31,33 +31,34 @@ func ExampleInt_UnmarshalJSON() {
 	_ = json.Unmarshal([]byte(`{"Field": "0x3"}`), &d)
 	fmt.Println(d.Field)
 
+	var e Object
+	_ = json.Unmarshal([]byte(`{"Field": "0x"}`), &e)
+	fmt.Println(e.Field, e.Field.Int == nil)
+
+	var f Object
+	_ = json.Unmarshal([]byte(`{"Field": ""}`), &f)
+	fmt.Println(f.Field, f.Field.Int == nil)
+
 	// not supports decoding emtpy string or empty hex
 	// eg. `{"Field": ""}` or `{"Field": "0x"}`
 
 	// Output:
-	// 0
+	// <nil> true
 	// 1
 	// 2
 	// 3
+	// <nil> true
+	// <nil> true
 }
 
 func ExampleNew() {
 	var i = New(100)
 	i.Add(i.Int, big.NewInt(100))
-	fmt.Println(i)
+	j := i.Copy()
+
+	i.Add(i.Int, big.NewInt(100))
+	fmt.Println(i, j)
 
 	// Output:
-	// 200
-}
-
-func ExampleNewBig() {
-	var a = NewBig(nil)
-	fmt.Println(a)
-
-	var b = NewBig(big.NewInt(1))
-	fmt.Println(b)
-
-	// Output:
-	// 0
-	// 1
+	// 300 200
 }

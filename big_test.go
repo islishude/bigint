@@ -80,14 +80,14 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 		{
 			name:    "empty string",
 			args:    args{[]byte(`{"Field": ""}`)},
-			wantErr: true,
+			wantErr: false,
 			want:    nil,
 		},
 		{
 			name:    "null",
 			args:    args{[]byte(`{"Field": null}`)},
 			wantErr: false,
-			want:    new(big.Int),
+			want:    nil,
 		},
 		{
 			name:    "string integer",
@@ -110,11 +110,11 @@ func TestInt_UnmarshalJSON(t *testing.T) {
 		{
 			name:    "empty hex string",
 			args:    args{[]byte(`{"Field": "0x"}`)},
-			wantErr: true,
+			wantErr: false,
 			want:    nil,
 		},
 		{
-			name:    "string hex 2",
+			name:    "string hex 0x03",
 			args:    args{[]byte(`{"Field": "0x03"}`)},
 			wantErr: false,
 			want:    big.NewInt(3),
@@ -216,7 +216,7 @@ func TestInt_Copy(t *testing.T) {
 		{
 			name:   "nil",
 			fields: fields{},
-			want:   Int{new(big.Int)},
+			want:   Int{},
 		},
 		{
 			name:   "not nil",
@@ -249,7 +249,7 @@ func TestInt_Value(t *testing.T) {
 		{
 			name:    "nil",
 			fields:  fields{},
-			want:    "0",
+			want:    nil,
 			wantErr: false,
 		},
 		{
@@ -344,33 +344,12 @@ func TestInt_Scan(t *testing.T) {
 			fields:  fields{},
 			args:    args{nil},
 			wantErr: false,
-			want:    new(big.Int),
-		},
-		{
-			name:    "int32",
-			fields:  fields{nil},
-			args:    args{int32(1024)},
-			wantErr: false,
-			want:    big.NewInt(1024),
-		},
-		{
-			name:    "uint32",
-			fields:  fields{nil},
-			args:    args{uint32(1024)},
-			wantErr: false,
-			want:    big.NewInt(1024),
+			want:    nil,
 		},
 		{
 			name:    "int64",
 			fields:  fields{nil},
 			args:    args{int64(1024)},
-			wantErr: false,
-			want:    big.NewInt(1024),
-		},
-		{
-			name:    "uint64",
-			fields:  fields{nil},
-			args:    args{uint64(1024)},
 			wantErr: false,
 			want:    big.NewInt(1024),
 		},
