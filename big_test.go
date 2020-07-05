@@ -398,3 +398,51 @@ func TestNewUint(t *testing.T) {
 		})
 	}
 }
+
+func TestInt_IsNil(t *testing.T) {
+	type fields struct {
+		Int *big.Int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{"nil", fields{}, true},
+		{"not nil", fields{big.NewInt(1024)}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := Int{
+				Int: tt.fields.Int,
+			}
+			if got := i.IsNil(); got != tt.want {
+				t.Errorf("Int.IsNil() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInt_Safer(t *testing.T) {
+	type fields struct {
+		Int *big.Int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *Int
+	}{
+		{"nil", fields{}, &Int{new(big.Int)}},
+		{"not nil", fields{big.NewInt(100)}, &Int{big.NewInt(100)}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &Int{
+				Int: tt.fields.Int,
+			}
+			if got := i.Safer(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Int.Safer() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

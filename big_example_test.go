@@ -14,7 +14,7 @@ func ExampleInt_UnmarshalJSON() {
 	// null
 	var a Object
 	_ = json.Unmarshal([]byte(`{"Field": null}`), &a)
-	fmt.Println(a.Field, a.Field.IsNil())
+	fmt.Println(a.Field)
 
 	// unsigned integer
 	var b Object
@@ -41,32 +41,58 @@ func ExampleInt_UnmarshalJSON() {
 	// empty hex string
 	var e Object
 	_ = json.Unmarshal([]byte(`{"Field": "0x"}`), &e)
-	fmt.Println(e.Field, e.Field.IsNil())
+	fmt.Println(e.Field)
 
 	// empty string
 	var f Object
 	_ = json.Unmarshal([]byte(`{"Field": ""}`), &f)
-	fmt.Println(f.Field, f.Field.IsNil())
+	fmt.Println(f.Field)
 
 	// Output:
-	// <nil> true
+	// <nil>
 	// 1
 	// -1
 	// 2
 	// -2
 	// 3
-	// <nil> true
-	// <nil> true
+	// <nil>
+	// <nil>
 }
 
-func ExampleNew() {
-	var i = New(100)
-	i.Add(i.Int, big.NewInt(100))
+func ExampleInt_Copy() {
+	i := New(100)
 	j := i.Copy()
 
 	i.Add(i.Int, big.NewInt(100))
+
 	fmt.Println(i, j)
+	// Output:
+	// 200 100
+}
+
+func ExampleInt_Safer() {
+	var a Int
+	_ = json.Unmarshal([]byte(`{"Field": null}`), &a)
+
+	fmt.Println(a.IsNil())
+	func() {
+		defer func() {
+			_ = recover()
+			fmt.Println("panic!")
+		}()
+		a.Add(big.NewInt(100), big.NewInt(100))
+	}()
+
+	fmt.Println(a.Safer().IsNil())
+	fmt.Println(a.IsNil()) // It's already safe
+
+	a.Add(big.NewInt(100), big.NewInt(100))
+	fmt.Println(a)
 
 	// Output:
-	// 300 200
+	// true
+	// panic!
+	// false
+	// false
+	// 200
 }

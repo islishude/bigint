@@ -131,3 +131,11 @@ func (i Int) Copy() Int {
 func (i Int) IsNil() bool {
 	return i.Int == nil
 }
+
+// Safer converts nil value to new(big.Int)
+func (i *Int) Safer() *Int {
+	if i.Int == nil {
+		i.Int = new(big.Int)
+	}
+	return i
+}
