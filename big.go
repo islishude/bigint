@@ -43,24 +43,14 @@ func (i Int) MarshalJSON() ([]byte, error) {
 func (i *Int) UnmarshalJSON(text []byte) error {
 	var ok bool
 	if bytes.HasPrefix(text, quote) {
-		n := text[1 : len(text)-1]
-		if bytes.HasPrefix(n, hprx) {
-			r := string(n[2:])
-			if r == "" {
-				return nil
-			}
+		text = text[1 : len(text)-1]
+	}
+
+	if bytes.HasPrefix(text, hprx) {
+		if r := string(text[2:]); r != "" {
 			if i.Int, ok = new(big.Int).SetString(r, 16); !ok {
 				return fmt.Errorf(`bigint: can't convert "0x%s" to *big.Int`, r)
 			}
-			return nil
-		}
-
-		r := string(n)
-		if r == "" {
-			return nil
-		}
-		if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
-			return fmt.Errorf(`bigint: can't convert "%s" to *big.Int`, r)
 		}
 		return nil
 	}
@@ -69,9 +59,10 @@ func (i *Int) UnmarshalJSON(text []byte) error {
 		return nil
 	}
 
-	r := string(text)
-	if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
-		return fmt.Errorf("bigint: can't convert %s to *big.Int", r)
+	if r := string(text); r != "" {
+		if i.Int, ok = new(big.Int).SetString(r, 10); !ok {
+			return fmt.Errorf(`bigint: can't convert "%s" to *big.Int`, r)
+		}
 	}
 	return nil
 }
