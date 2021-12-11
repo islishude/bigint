@@ -131,8 +131,8 @@ func (i *Int) Safer() *Int {
 	return i
 }
 
-// Reabable gets readable float64
-func (i *Int) Reaable(decimal int64) float64 {
+// Readable gets readable float64
+func (i *Int) Readable(decimal int64) float64 {
 	if i.IsNil() {
 		return 0
 	}

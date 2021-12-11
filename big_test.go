@@ -472,7 +472,7 @@ func TestInt_Reaable(t *testing.T) {
 			i := &Int{
 				Int: tt.fields.Int,
 			}
-			if got := i.Reaable(tt.args.decimal); got != tt.want {
+			if got := i.Readable(tt.args.decimal); got != tt.want {
 				t.Errorf("Int.Reaable() = %v, want %v", got, tt.want)
 			}
 		})
