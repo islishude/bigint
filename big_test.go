@@ -446,3 +446,35 @@ func TestInt_Safer(t *testing.T) {
 		})
 	}
 }
+
+func TestInt_Reaable(t *testing.T) {
+	type fields struct {
+		Int *big.Int
+	}
+	type args struct {
+		decimal int64
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   float64
+	}{
+		{"nil", fields{}, args{0}, 0},
+		{"negtive decimal", fields{big.NewInt(1)}, args{-1}, 1},
+		{"zero decimal", fields{big.NewInt(1)}, args{0}, 1},
+		{"decimal 2", fields{big.NewInt(100)}, args{2}, 1},
+		{"decimal 6", fields{big.NewInt(1e5)}, args{6}, 0.1},
+		{"decimal 18", fields{big.NewInt(0x1e5d5668508e0000)}, args{18}, 2.188},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &Int{
+				Int: tt.fields.Int,
+			}
+			if got := i.Reaable(tt.args.decimal); got != tt.want {
+				t.Errorf("Int.Reaable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

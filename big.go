@@ -130,3 +130,27 @@ func (i *Int) Safer() *Int {
 	}
 	return i
 }
+
+// Reabable gets readable float64
+func (i *Int) Reaable(decimal int64) float64 {
+	if i.IsNil() {
+		return 0
+	}
+
+	if decimal < 0 {
+		decimal = 0
+	}
+
+	if decimal == 0 {
+		return float64(i.Int64())
+	}
+
+	d := big.NewInt(10)
+	d.Exp(d, big.NewInt(decimal), nil)
+
+	r := new(big.Rat).SetInt(i.Int)
+	r.Quo(r, new(big.Rat).SetInt(d))
+
+	f, _ := r.Float64()
+	return f
+}
