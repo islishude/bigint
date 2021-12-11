@@ -478,3 +478,27 @@ func TestInt_Reaable(t *testing.T) {
 		})
 	}
 }
+
+func TestInt_ToInt(t *testing.T) {
+	type fields struct {
+		Int *big.Int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *big.Int
+	}{
+		{"nil", fields{}, big.NewInt(0)},
+		{"1", fields{big.NewInt(1)}, big.NewInt(1)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &Int{
+				Int: tt.fields.Int,
+			}
+			if got := i.ToInt(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Int.ToInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

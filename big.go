@@ -154,3 +154,8 @@ func (i *Int) Reaable(decimal int64) float64 {
 	f, _ := r.Float64()
 	return f
 }
+
+// ToInt convert to safeable *big.Int
+func (i *Int) ToInt() *big.Int {
+	return i.Safer().Int
+}
