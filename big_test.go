@@ -502,3 +502,24 @@ func TestInt_ToInt(t *testing.T) {
 		})
 	}
 }
+
+func TestFromBigInt(t *testing.T) {
+	type args struct {
+		i *big.Int
+	}
+	tests := []struct {
+		name string
+		args args
+		want Int
+	}{
+		{"case 1", args{big.NewInt(100)}, Int{big.NewInt(100)}},
+		{"case 2", args{big.NewInt(200)}, Int{big.NewInt(200)}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FromBigInt(tt.args.i); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FromBigInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

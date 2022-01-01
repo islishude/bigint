@@ -19,14 +19,19 @@ type Int struct {
 	*big.Int
 }
 
-// New creates Int by int64
+// New creates by int64 number
 func New(i int64) Int {
 	return Int{Int: big.NewInt(i)}
 }
 
-// New creates Int by int64
+// New creates by uint64 number
 func NewUint(i uint64) Int {
 	return Int{Int: new(big.Int).SetUint64(i)}
+}
+
+// FromBigInt creates by raw *big.Int
+func FromBigInt(i *big.Int) Int {
+	return Int{i}
 }
 
 // MarshalJSON implements the json.Marshaler interface.
@@ -155,7 +160,7 @@ func (i *Int) Readable(decimal int64) float64 {
 	return f
 }
 
-// ToInt convert to safeable *big.Int
+// ToInt converts to non-nil *big.Int
 func (i *Int) ToInt() *big.Int {
 	return i.Safer().Int
 }
