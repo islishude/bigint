@@ -137,7 +137,7 @@ func (i *Int) Safer() *Int {
 }
 
 // Readable gets readable float64
-func (i *Int) Readable(decimal int64) float64 {
+func (i Int) Readable(decimal int64) float64 {
 	if i.IsNil() {
 		return 0
 	}
@@ -161,6 +161,6 @@ func (i *Int) Readable(decimal int64) float64 {
 }
 
 // ToInt converts to non-nil *big.Int
-func (i *Int) ToInt() *big.Int {
+func (i Int) ToInt() *big.Int {
 	return i.Safer().Int
 }
